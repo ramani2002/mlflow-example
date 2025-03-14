@@ -14,6 +14,7 @@ from sklearn.linear_model import ElasticNet
 
 import mlflow
 import mlflow.sklearn
+from mlflow.models.signature import infer_signature
 
 
 def eval_metrics(actual, pred):
@@ -63,4 +64,10 @@ if __name__ == "__main__":
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
 
-        mlflow.sklearn.log_model(lr, "model")
+        # Start --> New lines
+        signature = infer_signature(test_x, lr.predict(test_x))
+        input_example = pd.DataFrame(test_x.iloc[0:1])
+        # End --> New lines
+
+        # mlflow.sklearn.log_model(lr, "model")
+        mlflow.sklearn.log_model(lr, "model", signature=signature, input_example=input_example)
